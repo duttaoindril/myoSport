@@ -25,8 +25,7 @@ var connected = false;
 
 Myo.connect();
 
-Myo.on('connected', function(data, timestamp){
-    console.log('connected!', this.id, data, timestamp);
+Myo.on('connected', function(data, timestamp) {
     this.streamEMG(true);
     Myo.setLockingPolicy("none");
     connected = true;
@@ -52,7 +51,9 @@ $("#rec").click(function() {
 function saveRec(time) {
     state = 0;
     $("#rec").html("Record");
-    $("textarea").html(time - timestamp + orientStreamx + orientStreamy + orientStreamz + orientStreamw + gyroStreamx + gyroStreamy + gyroStreamz + accelStreamx + accelStreamy + accelStreamz + podstream0 + podstream1 + podstream2 + podstream3 + podstream4 + podstream5 + podstream6 + podstream7);
+    var recordingObj = [(time - timestamp), orientStreamx, orientStreamy, orientStreamz, orientStreamw, gyroStreamx, gyroStreamy, gyroStreamz, accelStreamx, accelStreamy, accelStreamz, podstream0, podstream1, podstream2, podstream3, podstream4, podstream5, podstream6, podstream7];
+    $("textarea").html(recordingObj);
+    console.log(recordingObj);
 }
 
 function record() {
