@@ -30,36 +30,36 @@ Myo.on('connected', function(data, timestamp){
     this.streamEMG(true);
     Myo.setLockingPolicy("none");
     connected = true;
+    $("#status").html("Myo Connected");
 });
 
 Myo.on('disconnected', function() {
     connected = false;
     stopRec();
+    $("#status").html("Myo <b>Not</b> Connected");
 });
 
 $("#rec").click(function() {
+    Myo.connect();
     if(connected == false)
         alert("Please connect your Myo first.");
     else if(state == 0)
-    {
-        $("#rec").html("Stop");
         record();
-        timestamp = (new Date()).getTime();
-        state = 1;
-    } else if (state == 1) {
-        $("#rec").html("Record");
+    else if (state == 1)
         stopRec();
-    }
 });
 
 function saveRec(time) {
     state = 0;
     $("#rec").html("Record");
-    console.log(time - timestamp);
-    console.log(orientStreamx.join(", "));
+    $("textarea").html(time - timestamp + orientStreamx + orientStreamy + orientStreamz + orientStreamw + gyroStreamx + gyroStreamy + gyroStreamz + accelStreamx + accelStreamy + accelStreamz + podstream0 + podstream1 + podstream2 + podstream3 + podstream4 + podstream5 + podstream6 + podstream7);
 }
 
 function record() {
+    state = 1;
+    timestamp = (new Date()).getTime();
+    $("#rec").html("Stop");
+    $("#status").html("Myo Recording");
     Myo.on('emg', function(data){
         podstream0.push(data[0]);
         podstream1.push(data[1]);
@@ -114,6 +114,8 @@ function stopRec() {
         saveRec(time);
     else if(state == 0)
         alert("No recording to save!");
+
+    $("#status").html("Myo Connected");
 
     Myo.off("emg");
     Myo.off("imu");
