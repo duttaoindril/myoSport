@@ -53,7 +53,25 @@ function saveRec(time) {
     $("#rec").html("Record");
     var recordingObj = [(time - timestamp), orientStreamx, orientStreamy, orientStreamz, orientStreamw, gyroStreamx, gyroStreamy, gyroStreamz, accelStreamx, accelStreamy, accelStreamz, podstream0, podstream1, podstream2, podstream3, podstream4, podstream5, podstream6, podstream7];
     $("textarea").html(recordingObj);
-    console.log(recordingObj);
+    //console.log(recordingObj);
+    console.log("["+orientStreamx.toString(", ")+"]");
+    console.log("["+orientStreamy.toString(", ")+"]");
+    console.log("["+orientStreamz.toString(", ")+"]");
+    console.log("["+orientStreamw.toString(", ")+"]");
+    console.log("["+gyroStreamx.toString(", ")+"]");
+    console.log("["+gyroStreamy.toString(", ")+"]");
+    console.log("["+gyroStreamz.toString(", ")+"]");
+    console.log("["+accelStreamx.toString(", ")+"]");
+    console.log("["+accelStreamy.toString(", ")+"]");
+    console.log("["+accelStreamz.toString(", ")+"]");
+    console.log("["+podstream0.toString(", ")+"]");
+    console.log("["+podstream1.toString(", ")+"]");
+    console.log("["+podstream2.toString(", ")+"]");
+    console.log("["+podstream3.toString(", ")+"]");
+    console.log("["+podstream4.toString(", ")+"]");
+    console.log("["+podstream5.toString(", ")+"]");
+    console.log("["+podstream6.toString(", ")+"]");
+    console.log("["+podstream7.toString(", ")+"]");
 }
 
 function record() {
