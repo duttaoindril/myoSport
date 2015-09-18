@@ -1,3 +1,5 @@
+var myoSport = new Firebase("https://myosport.firebaseio.com/");
+
 var orientData;
 var gyroData;
 var accelData;
