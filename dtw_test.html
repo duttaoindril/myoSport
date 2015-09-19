@@ -72,28 +72,33 @@
             //Variable initialization
             var count = 0;
             var dt = .05;
-            var velX = 0;
-            var velY = 0;
-            var posX = canvas.width/2;
-            var posY = canvas.height/2;
+            var velA = 0;
+            var velB = 0;
+            var oldVelA = 0;
+            var oldVelB = 0;
+            var posA = canvas.width/2;
+            var posB = canvas.height/2;
             //Actual Draw
             var drawing = setInterval(function() {
-                //Increment velX/Y
-                velX = velX + mult*dataA[count] * dt;
-                velY = velY + mult*dataB[count] * dt;
+                //Update oldVelA/Y
+                var oldVelA = velA;
+                var oldVelB = velB;
+                //Increment velA/Y
+                velA = velA + mult*dataA[count] * dt;
+                velB = velB + mult*dataB[count] * dt;
                 //Draw it
                 ctx.beginPath();
-                ctx.moveTo(posX, posY);
-                //Increment posX/Y
-                posX = posX + velX * dt;
-                posY = posY + velY * dt;
+                ctx.moveTo(posA, posB);
+                //Increment posA/Y
+                posA = posA + (oldVelA + velA) * 0.5 * dt;
+                posB = posB + (oldVelB + velB) * 0.5 * dt;
                 //Resume Drawing
-                ctx.lineTo(posX, posY);
+                ctx.lineTo(posA, posB);
                 ctx.strokeStyle = color;
                 ctx.stroke();
                 //Increment and log data
                 count++;
-                console.log("Plane " + plane + " Color " + color + " Data "+ posX + " " + posY);
+                console.log("Plane " + plane + " Color " + color + " Data "+ posA + " " + posB);
                 //Stop when no more variables left
                 if(count > dataA.length || count > dataB.length)
                     window.clearInterval(drawing);
