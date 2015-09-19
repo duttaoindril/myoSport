@@ -1,22 +1,38 @@
+/**
+ * @title DTW API
+ * @author Elmar Langholz
+ * CUSTOM DTW MOD
+ */
+
 //////////////// VALIDATE.JS
 function validateSequence(sequence, sequenceParameterName) {
-    if (!(sequence instanceof Array))
+    if (!(sequence instanceof Array)) {
         throw new TypeError('Invalid sequence \'' + sequenceParameterName + '\' type: expected an array');
-    if (sequence.length < 1)
+    }
+
+    if (sequence.length < 1) {
         throw new Error('Invalid number of sequence data points for \'' + sequenceParameterName + '\': expected at least one');
-    if (typeof sequence[0] !== 'number')
+    }
+
+    if (typeof sequence[0] !== 'number') {
         throw new TypeError('Invalid data points types for sequence \'' + sequenceParameterName + '\': expected a number');
+    }
 }
 //////////////// MATRIX.JS
 var createArray = function (length, value) {
-    if (typeof length !== 'number')
+    if (typeof length !== 'number') {
         throw new TypeError('Invalid length type');
-    if (typeof value === 'undefined')
+    }
+
+    if (typeof value === 'undefined') {
         throw new Error('Invalid value: expected a value to be provided');
+    }
+
     var array = new Array(length);
     for (var index = 0; index < length; index++) {
         array[index] = value;
     }
+
     return array;
 };
 
@@ -25,6 +41,7 @@ var createMatrix = function (m, n, value) {
     for (var rowIndex = 0; rowIndex < m; rowIndex++) {
         matrix.push(createArray(n, value));
     }
+
     return matrix;
 };
 
@@ -82,12 +99,14 @@ function validateOptions(options) {
 function retrieveDistanceFunction(distanceMetric) {
     var normalizedDistanceMetric = distanceMetric.toLowerCase();
     var distanceFunction = null;
-    if (normalizedDistanceMetric === 'manhattan')
+    if (normalizedDistanceMetric === 'manhattan') {
         distanceFunction = manhatDistance;
-    else if (normalizedDistanceMetric === 'euclidean')
+    } else if (normalizedDistanceMetric === 'euclidean') {
         distanceFunction = euclidDistance;
-    else if (normalizedDistanceMetric === 'squaredeuclidean')
-        distanceFunction = sqEuclidDistance;
+    } else if (normalizedDistanceMetric === 'squaredeuclidean') {
+        distanceFunction = sqEuclidDistance
+    }
+
     return distanceFunction;
 }
 
