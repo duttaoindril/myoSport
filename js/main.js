@@ -152,9 +152,9 @@ function saveRec(time) {
     $("#dtwB").append($("<option></option>").attr("value", recordingsArray.length).text(recordingObj["name"]));
     console.log(recordingObj);
     recordingsArray.push(recordingObj);
-    draw(recordingObj['accelStreamx'], recordingObj['accelStreamy'], "xy", -1, 50, recordingObj["color"], 3);
-    draw(recordingObj['accelStreamx'], recordingObj['accelStreamz'], "xz", -1, 50, recordingObj["color"], 3);
-    draw(recordingObj['accelStreamy'], recordingObj['accelStreamz'], "yz", -1, 50, recordingObj["color"], 3);
+    draw(recordingObj['accelStreamx'], recordingObj['accelStreamy'], "xy", -1, 10, recordingObj["color"], 3);
+    draw(recordingObj['accelStreamx'], recordingObj['accelStreamz'], "xz", -1, 10, recordingObj["color"], 3);
+    draw(recordingObj['accelStreamy'], recordingObj['accelStreamz'], "yz", -1, 10, recordingObj["color"], 3);
 }
 
 function stopRec() {
