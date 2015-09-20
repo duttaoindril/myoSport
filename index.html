@@ -6,43 +6,83 @@
     </head>
     <body>
         <h1>Myo Sport</h1>
-        <h2 id="status">Myo Not Connected<h2>
-        <div class="button" id="rec">Record</div>
-        <!--<div class="button" id="stop">Stop</div>-->
+        <h2 id="status">Myo Not Connected</h2>
+        <h2><div class="button" id="rec">Record</div></h2>
         <h3>EMG Data</h3>
         <div class='emgGraph'>
-            <p id='pod0' class='emgNum'>0</p>
-            <p id='pod1' class='emgNum'>0</p>
-            <p id='pod2' class='emgNum'>0</p>
-            <p id='pod3' class='emgNum'>0</p>
-            <p id='pod4' class='emgNum'>0</p>
-            <p id='pod5' class='emgNum'>0</p>
-            <p id='pod6' class='emgNum'>0</p>
-            <p id='pod7' class='emgNum'>0</p>
+            <p id='pod0'>0</p>
+            <p id='pod1'>0</p>
+            <p id='pod2'>0</p>
+            <p id='pod3'>0</p>
+            <p id='pod4'>0</p>
+            <p id='pod5'>0</p>
+            <p id='pod6'>0</p>
+            <p id='pod7'>0</p>
         </div>
         <h3>Orientation Data</h3>
         <div class='orientGraph'>
-            <p id='x' class='orientNum'>0</p>
-            <p id='y' class='orientNum'>0</p>
-            <p id='z' class='orientNum'>0</p>
-            <p id='w' class='orientNum'>0</p>
+            <p id='x'>0</p>
+            <p id='y'>0</p>
+            <p id='z'>0</p>
+            <p id='w'>0</p>
         </div>
         <h3>Gyroscope Data</h3>
         <div class='gyroGraph'>
-            <p id='x' class='gyroNum'>0</p>
-            <p id='y' class='gyroNum'>0</p>
-            <p id='z' class='gyroNum'>0</p>
+            <p id='x'>0</p>
+            <p id='y'>0</p>
+            <p id='z'>0</p>
         </div>
         <h3>Accelerometer Data</h3>
         <div class='accelGraph'>
-            <p id='x' class='accelNum'>0</p>
-            <p id='y' class='accelNum'>0</p>
-            <p id='z' class='accelNum'>0</p>
+            <p id='x'>0</p>
+            <p id='y'>0</p>
+            <p id='z'>0</p>
         </div>
-        <h3>Recording</h3>
-        <textarea></textarea>
-        <script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script>
+        <br>
+        <h2>Latest Recording</h2>
+        <h4 id="name"></h4>
+        <h4 id="time"></h4>
+        <h4 id="arm"></h4>
+        <h4 id="color"></h4>
+        <br>
+        <h2>DTW Recording Comparison</h2>
+        <select id="dtwA">
+        </select>
+        <select id="dtwB">
+        </select>
+        <br>
+        <h2><div class="button" id="dtwcompute">Compute</div></h2>
+        <h4 id="orientStreamx">orientStreamx cost: 0</h4>
+        <h4 id="orientStreamy">orientStreamy cost: 0</h4>
+        <h4 id="orientStreamz">orientStreamz cost: 0</h4>
+        <h4 id="orientStreamw">orientStreamw cost: 0</h4>
+        <h4 id="gyroStreamx">gyroStreamx cost: 0</h4>
+        <h4 id="gyroStreamy">gyroStreamy cost: 0</h4>
+        <h4 id="gyroStreamz">gyroStreamz cost: 0</h4>
+        <h4 id="accelStreamx">accelStreamx cost: 0</h4>
+        <h4 id="accelStreamy">accelStreamy cost: 0</h4>
+        <h4 id="accelStreamz">accelStreamz cost: 0</h4>
+        <h4 id="podstream0">podstream0 cost: 0</h4>
+        <h4 id="podstream1">podstream1 cost: 0</h4>
+        <h4 id="podstream2">podstream2 cost: 0</h4>
+        <h4 id="podstream3">podstream3 cost: 0</h4>
+        <h4 id="podstream4">podstream4 cost: 0</h4>
+        <h4 id="podstream5">podstream5 cost: 0</h4>
+        <h4 id="podstream6">podstream6 cost: 0</h4>
+        <h4 id="podstream7">podstream7 cost: 0</h4>
+        <br>
+        <h2>All Recording Visualizations</h2>
+        <canvas id="visualxy" width="400" height="400" style="border:3px solid #FF7519;"></canvas>
+        <canvas id="visualxz" width="400" height="400" style="border:3px solid #FF7519;"></canvas>
+        <canvas id="visualyz" width="400" height="400" style="border:3px solid #FF7519;"></canvas>
+        <br><br>
+        <!-- <script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script> -->
         <script src='js/jquery.js'></script>
+        <script src='js/dtw.js'></script>
+        <script src='js/json/cycle.js'></script>
+        <script src='js/json/json_parse.js'></script>
+        <script src='js/json/json_parse_state.js'></script>
+        <script src='js/json/json2.js'></script>
         <script src='js/myo.js'></script>
         <script src='js/main.js'></script>
     </body>

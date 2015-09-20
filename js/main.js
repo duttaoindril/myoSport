@@ -1,8 +1,4 @@
-var myoSport = new Firebase("https://myosport.firebaseio.com/");
-
-var orientData;
-var gyroData;
-var accelData;
+//var myoSport = new Firebase("https://myosport.firebaseio.com/");
 var orientStreamx = [];
 var orientStreamy = [];
 var orientStreamz = [];
@@ -21,9 +17,11 @@ var podstream4 = [];
 var podstream5 = [];
 var podstream6 = [];
 var podstream7 = [];
-var state = 0;
-var timestamp = 0;
 var connected = false;
+var recording = false;
+var timestamp = 0;
+
+var recordingsArray = [];
 
 Myo.connect();
 
@@ -44,40 +42,36 @@ $("#rec").click(function() {
     Myo.connect();
     if(connected == false)
         alert("Please connect your Myo first.");
-    else if(state == 0)
+    else if(!recording)
         record();
-    else if (state == 1)
+    else if (recording)
         stopRec();
 });
 
-function saveRec(time) {
-    state = 0;
-    $("#rec").html("Record");
-    var recordingObj = [(time - timestamp), orientStreamx, orientStreamy, orientStreamz, orientStreamw, gyroStreamx, gyroStreamy, gyroStreamz, accelStreamx, accelStreamy, accelStreamz, podstream0, podstream1, podstream2, podstream3, podstream4, podstream5, podstream6, podstream7];
-    $("textarea").html(recordingObj);
-    //console.log(recordingObj);
-    console.log("["+orientStreamx.toString(", ")+"]");
-    console.log("["+orientStreamy.toString(", ")+"]");
-    console.log("["+orientStreamz.toString(", ")+"]");
-    console.log("["+orientStreamw.toString(", ")+"]");
-    console.log("["+gyroStreamx.toString(", ")+"]");
-    console.log("["+gyroStreamy.toString(", ")+"]");
-    console.log("["+gyroStreamz.toString(", ")+"]");
-    console.log("["+accelStreamx.toString(", ")+"]");
-    console.log("["+accelStreamy.toString(", ")+"]");
-    console.log("["+accelStreamz.toString(", ")+"]");
-    console.log("["+podstream0.toString(", ")+"]");
-    console.log("["+podstream1.toString(", ")+"]");
-    console.log("["+podstream2.toString(", ")+"]");
-    console.log("["+podstream3.toString(", ")+"]");
-    console.log("["+podstream4.toString(", ")+"]");
-    console.log("["+podstream5.toString(", ")+"]");
-    console.log("["+podstream6.toString(", ")+"]");
-    console.log("["+podstream7.toString(", ")+"]");
-}
+$("#dtwcompute").click(function() {
+    var dtw = new DTW();
+    $("#orientStreamx").html("orientStreamx cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["orientStreamx"], recordingsArray[$("#dtwB").val()]["orientStreamx"]));
+    $("#orientStreamy").html("orientStreamy cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["orientStreamy"], recordingsArray[$("#dtwB").val()]["orientStreamy"]));
+    $("#orientStreamz").html("orientStreamz cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["orientStreamz"], recordingsArray[$("#dtwB").val()]["orientStreamz"]));
+    $("#orientStreamw").html("orientStreamw cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["orientStreamw"], recordingsArray[$("#dtwB").val()]["orientStreamw"]));
+    $("#gyroStreamx").html("gyroStreamx cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["gyroStreamx"], recordingsArray[$("#dtwB").val()]["gyroStreamx"]));
+    $("#gyroStreamy").html("gyroStreamy cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["gyroStreamy"], recordingsArray[$("#dtwB").val()]["gyroStreamy"]));
+    $("#gyroStreamz").html("gyroStreamz cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["gyroStreamz"], recordingsArray[$("#dtwB").val()]["gyroStreamz"]));
+    $("#accelStreamx").html("accelStreamx cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["accelStreamx"], recordingsArray[$("#dtwB").val()]["accelStreamx"]));
+    $("#accelStreamy").html("accelStreamy cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["accelStreamy"], recordingsArray[$("#dtwB").val()]["accelStreamy"]));
+    $("#accelStreamz").html("accelStreamz cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["accelStreamz"], recordingsArray[$("#dtwB").val()]["accelStreamz"]));
+    $("#podstream0").html("podstream0 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream0"], recordingsArray[$("#dtwB").val()]["podstream0"]));
+    $("#podstream1").html("podstream1 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream1"], recordingsArray[$("#dtwB").val()]["podstream1"]));
+    $("#podstream2").html("podstream2 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream2"], recordingsArray[$("#dtwB").val()]["podstream2"]));
+    $("#podstream3").html("podstream3 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream3"], recordingsArray[$("#dtwB").val()]["podstream3"]));
+    $("#podstream4").html("podstream4 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream4"], recordingsArray[$("#dtwB").val()]["podstream4"]));
+    $("#podstream5").html("podstream5 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream5"], recordingsArray[$("#dtwB").val()]["podstream5"]));
+    $("#podstream6").html("podstream6 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream6"], recordingsArray[$("#dtwB").val()]["podstream6"]));
+    $("#podstream7").html("podstream7 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream7"], recordingsArray[$("#dtwB").val()]["podstream7"]));
+});
 
 function record() {
-    state = 1;
+    recording = true;
     timestamp = (new Date()).getTime();
     $("#rec").html("Stop");
     $("#status").html("Myo Recording");
@@ -100,22 +94,16 @@ function record() {
         $(".emgGraph #pod7").html(podstream7.slice(podstream7.length - 11, podstream7.length).join("\t"));
     });
 
-    Myo.on('imu', function(data){
-        orientData = data["orientation"];
-        gyroData = data["gyroscope"];
-        accelData = data["accelerometer"];
-
-        orientStreamx.push(orientData["x"]);
-        orientStreamy.push(orientData["y"]);
-        orientStreamz.push(orientData["z"]);
-        orientStreamw.push(orientData["w"]);
-        gyroStreamx.push(gyroData["x"]);
-        gyroStreamy.push(gyroData["y"]);
-        gyroStreamz.push(gyroData["z"]);
-        accelStreamx.push(accelData["x"]);
-        accelStreamy.push(accelData["y"]);
-        accelStreamz.push(accelData["z"]);
-
+    Myo.on('imu', function(data){orientStreamx.push(data["orientation"]["x"]);
+        orientStreamy.push(data["orientation"]["y"]);
+        orientStreamz.push(data["orientation"]["z"]);
+        orientStreamw.push(data["orientation"]["w"]);
+        gyroStreamx.push(data["gyroscope"]["x"]);
+        gyroStreamy.push(data["gyroscope"]["y"]);
+        gyroStreamz.push(data["gyroscope"]["z"]);
+        accelStreamx.push(data["accelerometer"]["x"]);
+        accelStreamy.push(data["accelerometer"]["y"]);
+        accelStreamz.push(data["accelerometer"]["z"]);
         $(".orientGraph #x").html(orientStreamx.slice(orientStreamx.length - 11, orientStreamx.length).join("\t"));
         $(".orientGraph #y").html(orientStreamy.slice(orientStreamy.length - 11, orientStreamy.length).join("\t"));
         $(".orientGraph #z").html(orientStreamz.slice(orientStreamz.length - 11, orientStreamz.length).join("\t"));
@@ -129,18 +117,55 @@ function record() {
     });
 }
 
+function saveRec(time) {
+    recording = false;
+    $("#rec").html("Record");
+    var recordingObj = {
+        "name": prompt("Please enter a recording name", "Recording "+recordingsArray.length+1),
+        "time": (time - timestamp),
+        "arm": "right",
+        "color": prompt("Please enter a recording color", "red"),
+        "orientStreamx": orientStreamx,
+        "orientStreamy": orientStreamy,
+        "orientStreamz": orientStreamz,
+        "orientStreamw": orientStreamw,
+        "gyroStreamx": gyroStreamx,
+        "gyroStreamy": gyroStreamy,
+        "gyroStreamz": gyroStreamz,
+        "accelStreamx": accelStreamx,
+        "accelStreamy": accelStreamy,
+        "accelStreamz": accelStreamz,
+        "podstream0": podstream0,
+        "podstream1": podstream1,
+        "podstream2": podstream2,
+        "podstream3": podstream3,
+        "podstream4": podstream4,
+        "podstream5": podstream5,
+        "podstream6": podstream6,
+        "podstream7": podstream7
+    };
+    $("#name").html($("#name").html() + " " + recordingObj["name"]);
+    $("#time").html($("#time").html() + " " + recordingObj["time"]);
+    $("#arm").html($("#arm").html() + " " + recordingObj["arm"]);
+    $("#color").html($("#color").html() + " " + recordingObj["color"]);
+    $("#dtwA").append($("<option></option>").attr("value", recordingsArray.length).text(recordingObj["name"]));
+    $("#dtwB").append($("<option></option>").attr("value", recordingsArray.length).text(recordingObj["name"]));
+    console.log(recordingObj);
+    recordingsArray.push(recordingObj);
+    draw(recordingObj['accelStreamx'], recordingObj['accelStreamy'], "xy", -9, 50, recordingObj["color"], 3);
+    draw(recordingObj['accelStreamx'], recordingObj['accelStreamz'], "xz", -2.75, 50, recordingObj["color"], 3);
+    draw(recordingObj['accelStreamy'], recordingObj['accelStreamz'], "yz", -2.75, 50, recordingObj["color"], 3);
+}
+
 function stopRec() {
     time = (new Date()).getTime();
-    if(state > 0 && confirm('Do you want to save this recording?'))
+    if(recording && confirm('Do you want to save this recording?'))
         saveRec(time);
-    else if(state == 0)
+    else if(!recording)
         alert("No recording to save!");
-
     $("#status").html("Myo Connected");
-
     Myo.off("emg");
     Myo.off("imu");
-
     orientStreamx = [];
     orientStreamy = [];
     orientStreamz = [];
@@ -159,8 +184,7 @@ function stopRec() {
     podstream5 = [];
     podstream6 = [];
     podstream7 = [];
-    state = 0;
-
+    recording = false;
     $(".emgGraph #pod0").html("0");
     $(".emgGraph #pod1").html("0");
     $(".emgGraph #pod2").html("0");
@@ -179,4 +203,40 @@ function stopRec() {
     $(".accelGraph #x").html("0");
     $(".accelGraph #y").html("0");
     $(".accelGraph #z").html("0");
+}
+
+function draw(dataA, dataB, plane, mult, speed, color, width) {
+    var canvas = document.getElementById("visual"+plane);
+    var ctx = canvas.getContext("2d")
+    ctx.fillStyle = "#FF7519";
+    ctx.font = "16px Arial";
+    ctx.textAlign = "center";
+    ctx.fillText(plane+" plane", canvas.width/2, 15)
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.lineWidth = width
+    var count = 0;
+    var dt = .05;
+    var velA = 0;
+    var velB = 0;
+    var oldVelA = 0;
+    var oldVelB = 0;
+    var posA = canvas.width/2;
+    var posB = canvas.height/2
+    var drawing = setInterval(function() {
+        var oldVelA = velA;
+        var oldVelB = velB;
+        velA = velA + mult*dataA[count] * dt;
+        velB = velB + mult*dataB[count] * dt;
+        ctx.beginPath();
+        ctx.moveTo(posA, posB);
+        posA = posA + (oldVelA + velA) * 0.5 * dt;
+        posB = posB + (oldVelB + velB) * 0.5 * dt;
+        ctx.lineTo(posA, posB);
+        ctx.strokeStyle = color;
+        ctx.stroke();
+        count++;
+        if(count > dataA.length || count > dataB.length)
+            window.clearInterval(drawing);
+    }, speed);
 }
