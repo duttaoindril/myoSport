@@ -128,7 +128,7 @@ function saveRec(time) {
 
     recording1.set("name", prompt("Please enter a recording name", "Recording "+recordingsArray.length+1));
     recording1.set("time", (time - timestamp));
-    recording1.set("color": prompt("Please enter a recording color", "red"));
+    recording1.set("color", prompt("Please enter a recording color", "red"));
     recording1.set("orientStreamx", orientStreamx);
     recording1.set("orientStreamy", orientStreamy);
     recording1.set("orientStreamz", orientStreamz);
