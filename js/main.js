@@ -19,6 +19,7 @@ var podstream6 = [];
 var podstream7 = [];
 var connected = false;
 var recording = false;
+var drawing = false;
 var timestamp = 0;
 
 var recordingsArray = [];
@@ -40,8 +41,8 @@ Myo.on('disconnected', function() {
 
 $("#rec").click(function() {
     Myo.connect();
-    if(connected == false)
-        alert("Please connect your Myo first.");
+    if(connected == false || drawing)
+        alert("Please connect your Myo, or stop drawing first.");
     else if(!recording)
         record();
     else if (recording)
@@ -207,14 +208,14 @@ function stopRec() {
 
 function draw(dataA, dataB, plane, mult, speed, color, width) {
     var canvas = document.getElementById("visual"+plane);
-    var ctx = canvas.getContext("2d")
+    var ctx = canvas.getContext("2d");
     ctx.fillStyle = "#FF7519";
     ctx.font = "16px Arial";
     ctx.textAlign = "center";
-    ctx.fillText(plane+" plane", canvas.width/2, 15)
+    ctx.fillText(plane+" plane", canvas.width/2, 15);
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.lineWidth = width
+    ctx.lineWidth = width;
     var count = 0;
     var dt = .05;
     var velA = 0;
@@ -222,8 +223,8 @@ function draw(dataA, dataB, plane, mult, speed, color, width) {
     var oldVelA = 0;
     var oldVelB = 0;
     var posA = canvas.width/2;
-    var posB = canvas.height/2
-    var drawing = setInterval(function() {
+    var posB = canvas.height/2;
+    var recordingdrawing = setInterval(function() {
         var oldVelA = velA;
         var oldVelB = velB;
         velA = velA + mult*dataA[count] * dt;
@@ -237,6 +238,56 @@ function draw(dataA, dataB, plane, mult, speed, color, width) {
         ctx.stroke();
         count++;
         if(count > dataA.length || count > dataB.length)
-            window.clearInterval(drawing);
+            window.clearInterval(recordingdrawing);
     }, speed);
 }
+
+function freedraw(plane, mult, speed, color, width, velA, velB, posA, posB, dataA, dataB) {
+    var canvas = document.getElementById("visual"+plane);
+    var ctx = canvas.getContext("2d");
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.lineWidth = width;
+    var dt = .05;
+    var oldVelA = velA;
+    var oldVelB = velB;
+    velA = velA + mult * dataA * dt;
+    velB = velB + mult * dataB * dt;
+    ctx.beginPath();
+    ctx.moveTo(posA, posB);
+    posA = posA + (oldVelA + velA) * 0.5 * dt;
+    posB = posB + (oldVelB + velB) * 0.5 * dt;
+    ctx.lineTo(posA, posB);
+    ctx.strokeStyle = color;
+    ctx.stroke();
+    return [velA, velB, posA, posB];
+}
+
+$("#draw").click(function() {
+    Myo.connect();
+    if(connected == false || recording)
+        alert("Please connect your Myo, or stop recording first.");
+    else if(!drawing) {
+        $("#draw").html("Stop");
+        var xy = [0, 0, 200, 200];
+        var xz = [0, 0, 200, 200];
+        var yz = [0, 0, 200, 200];
+        drawing = true;
+        document.getElementById("visualxy").getContext("2d").clearRect(0, 0, 400, 400);
+        document.getElementById("visualxz").getContext("2d").clearRect(0, 0, 400, 400);
+        document.getElementById("visualyz").getContext("2d").clearRect(0, 0, 400, 400);
+        Myo.on('accelerometer', function(data) {
+            xy = freedraw("xy", -1, 10, "orange", 3, xy[0], xy[1], xy[2], xy[3], data['x'], data['y']);
+            xz = freedraw("xz", -1, 10, "orange", 3, xz[0], xz[1], xz[2], xz[3], data['x'], data['z']);
+            yz = freedraw("yz", -1, 10, "orange", 3, yz[0], yz[1], yz[2], yz[3], data['y'], data['z']);
+            console.log("xy", xy[2], xy[3]);
+            console.log("xz", xz[2], xz[3]);
+            console.log("yz", yz[2], yz[3]);
+        });
+    }
+    else if (drawing) {
+        drawing = false;
+        $("#draw").html("Draw");
+        Myo.off("accelerometer");
+    }
+});
