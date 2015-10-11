@@ -17,10 +17,15 @@
   },
   "homepage": "https://github.com/duttaoindril/myoSport",
   "dependencies": {
+    "body-parser": "^1.14.1",
     "dtw": "0.0.3",
     "express": "^4.13.3",
     "firebase": "^2.3.1",
     "jade": "^1.11.0",
-    "myo": "^2.1.0"
+    "morgan": "^1.6.1",
+    "myo": "^2.1.0",
+    "node-dev": "^2.7.1",
+    "reload": "^0.5.0",
+    "supervisor": "^0.9.1"
   }
 }
