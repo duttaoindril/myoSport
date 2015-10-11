@@ -1,4 +1,3 @@
-//var myoSport = new Firebase("https://myosport.firebaseio.com/");
 var orientStreamx = [];
 var orientStreamy = [];
 var orientStreamz = [];
@@ -21,8 +20,36 @@ var connected = false;
 var recording = false;
 var drawing = false;
 var timestamp = 0;
+var username = prompt("Please enter your username", "duttaoindril");
+var myoSport = new Firebase("https://myosport.firebaseio.com/"+username);
 
-var recordingsArray = [];
+myoSport.on("value", function(snapshot) {
+    var i = 0;
+    $("#name").html("");
+    $("#name").html("");
+    $("#time").html("");
+    $("#arm").html("");
+    $("#color").html("");
+    $("#dtwA").html("");
+    $("#dtwB").html("");
+    document.getElementById("visualxy").getContext("2d").clearRect(0, 0, 400, 400);
+    document.getElementById("visualxz").getContext("2d").clearRect(0, 0, 400, 400);
+    document.getElementById("visualyz").getContext("2d").clearRect(0, 0, 400, 400);
+    var recordings = snapshot.val().recordings;
+    for (key in recordings) {
+        recording = recordings[key];
+        $("#name").html($("#name").html() + "<td>" + recording["name"] + "</td>");
+        $("#time").html($("#time").html() + "<td>" + recording["time"] + "</td>");
+        $("#arm").html($("#arm").html() + "<td>" + recording["arm"] + "</td>");
+        $("#color").html($("#color").html() + "<td>" + recording["color"] + "</td>");
+        $("#dtwA").append($("<option></option>").attr("value", i).text(recording["name"]));
+        $("#dtwB").append($("<option></option>").attr("value", i).text(recording["name"]));
+        draw(recording['accelStreamx'], recording['accelStreamy'], "xy", -1, 10, recording["color"], 3);
+        draw(recording['accelStreamx'], recording['accelStreamz'], "xz", -1, 10, recording["color"], 3);
+        draw(recording['accelStreamy'], recording['accelStreamz'], "yz", -1, 10, recording["color"], 3);
+        i++;
+    }
+});
 
 Myo.connect();
 
@@ -49,26 +76,55 @@ $("#rec").click(function() {
         stopRec();
 });
 
+$("#draw").click(function() {
+    Myo.connect();
+    if(connected == false || recording)
+        alert("Please connect your Myo, or stop recording first.");
+    else if(!drawing) {
+        $("#draw").html("Stop");
+        var xy = [0, 0, 200, 200];
+        var xz = [0, 0, 200, 200];
+        var yz = [0, 0, 200, 200];
+        drawing = true;
+        document.getElementById("visualxy").getContext("2d").clearRect(0, 0, 400, 400);
+        document.getElementById("visualxz").getContext("2d").clearRect(0, 0, 400, 400);
+        document.getElementById("visualyz").getContext("2d").clearRect(0, 0, 400, 400);
+        Myo.on('accelerometer', function(data) {
+            xy = freedraw("xy", -1, 10, "orange", 3, xy[0], xy[1], xy[2], xy[3], data['x'], data['y']);
+            xz = freedraw("xz", -1, 10, "orange", 3, xz[0], xz[1], xz[2], xz[3], data['x'], data['z']);
+            yz = freedraw("yz", -1, 10, "orange", 3, yz[0], yz[1], yz[2], yz[3], data['y'], data['z']);
+        });
+    }
+    else if (drawing) {
+        drawing = false;
+        $("#draw").html("Draw");
+        Myo.off("accelerometer");
+    }
+});
+
 $("#dtwcompute").click(function() {
     var dtw = new DTW();
-    $("#orientStreamx").html("orientStreamx cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["orientStreamx"], recordingsArray[$("#dtwB").val()]["orientStreamx"]));
-    $("#orientStreamy").html("orientStreamy cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["orientStreamy"], recordingsArray[$("#dtwB").val()]["orientStreamy"]));
-    $("#orientStreamz").html("orientStreamz cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["orientStreamz"], recordingsArray[$("#dtwB").val()]["orientStreamz"]));
-    $("#orientStreamw").html("orientStreamw cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["orientStreamw"], recordingsArray[$("#dtwB").val()]["orientStreamw"]));
-    $("#gyroStreamx").html("gyroStreamx cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["gyroStreamx"], recordingsArray[$("#dtwB").val()]["gyroStreamx"]));
-    $("#gyroStreamy").html("gyroStreamy cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["gyroStreamy"], recordingsArray[$("#dtwB").val()]["gyroStreamy"]));
-    $("#gyroStreamz").html("gyroStreamz cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["gyroStreamz"], recordingsArray[$("#dtwB").val()]["gyroStreamz"]));
-    $("#accelStreamx").html("accelStreamx cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["accelStreamx"], recordingsArray[$("#dtwB").val()]["accelStreamx"]));
-    $("#accelStreamy").html("accelStreamy cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["accelStreamy"], recordingsArray[$("#dtwB").val()]["accelStreamy"]));
-    $("#accelStreamz").html("accelStreamz cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["accelStreamz"], recordingsArray[$("#dtwB").val()]["accelStreamz"]));
-    $("#podstream0").html("podstream0 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream0"], recordingsArray[$("#dtwB").val()]["podstream0"]));
-    $("#podstream1").html("podstream1 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream1"], recordingsArray[$("#dtwB").val()]["podstream1"]));
-    $("#podstream2").html("podstream2 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream2"], recordingsArray[$("#dtwB").val()]["podstream2"]));
-    $("#podstream3").html("podstream3 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream3"], recordingsArray[$("#dtwB").val()]["podstream3"]));
-    $("#podstream4").html("podstream4 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream4"], recordingsArray[$("#dtwB").val()]["podstream4"]));
-    $("#podstream5").html("podstream5 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream5"], recordingsArray[$("#dtwB").val()]["podstream5"]));
-    $("#podstream6").html("podstream6 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream6"], recordingsArray[$("#dtwB").val()]["podstream6"]));
-    $("#podstream7").html("podstream7 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream7"], recordingsArray[$("#dtwB").val()]["podstream7"]));
+    myoSport.child(username).on("value", function(snapshot) {
+        recordingsArray = snapshot.val().recordings;
+        $("#orientStreamx").html("orientStreamx cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["orientStreamx"], recordingsArray[$("#dtwB").val()]["orientStreamx"]));
+        $("#orientStreamy").html("orientStreamy cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["orientStreamy"], recordingsArray[$("#dtwB").val()]["orientStreamy"]));
+        $("#orientStreamz").html("orientStreamz cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["orientStreamz"], recordingsArray[$("#dtwB").val()]["orientStreamz"]));
+        $("#orientStreamw").html("orientStreamw cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["orientStreamw"], recordingsArray[$("#dtwB").val()]["orientStreamw"]));
+        $("#gyroStreamx").html("gyroStreamx cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["gyroStreamx"], recordingsArray[$("#dtwB").val()]["gyroStreamx"]));
+        $("#gyroStreamy").html("gyroStreamy cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["gyroStreamy"], recordingsArray[$("#dtwB").val()]["gyroStreamy"]));
+        $("#gyroStreamz").html("gyroStreamz cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["gyroStreamz"], recordingsArray[$("#dtwB").val()]["gyroStreamz"]));
+        $("#accelStreamx").html("accelStreamx cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["accelStreamx"], recordingsArray[$("#dtwB").val()]["accelStreamx"]));
+        $("#accelStreamy").html("accelStreamy cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["accelStreamy"], recordingsArray[$("#dtwB").val()]["accelStreamy"]));
+        $("#accelStreamz").html("accelStreamz cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["accelStreamz"], recordingsArray[$("#dtwB").val()]["accelStreamz"]));
+        $("#podstream0").html("podstream0 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream0"], recordingsArray[$("#dtwB").val()]["podstream0"]));
+        $("#podstream1").html("podstream1 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream1"], recordingsArray[$("#dtwB").val()]["podstream1"]));
+        $("#podstream2").html("podstream2 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream2"], recordingsArray[$("#dtwB").val()]["podstream2"]));
+        $("#podstream3").html("podstream3 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream3"], recordingsArray[$("#dtwB").val()]["podstream3"]));
+        $("#podstream4").html("podstream4 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream4"], recordingsArray[$("#dtwB").val()]["podstream4"]));
+        $("#podstream5").html("podstream5 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream5"], recordingsArray[$("#dtwB").val()]["podstream5"]));
+        $("#podstream6").html("podstream6 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream6"], recordingsArray[$("#dtwB").val()]["podstream6"]));
+        $("#podstream7").html("podstream7 cost: "+dtw.compute(recordingsArray[$("#dtwA").val()]["podstream7"], recordingsArray[$("#dtwB").val()]["podstream7"]));
+    });
 });
 
 function record() {
@@ -76,6 +132,7 @@ function record() {
     timestamp = (new Date()).getTime();
     $("#rec").html("Stop");
     $("#status").html("Myo Recording");
+
     Myo.on('emg', function(data){
         podstream0.push(data[0]);
         podstream1.push(data[1]);
@@ -93,9 +150,12 @@ function record() {
         $(".emgGraph #pod5").html(podstream5.slice(podstream5.length - 11, podstream5.length).join("\t"));
         $(".emgGraph #pod6").html(podstream6.slice(podstream6.length - 11, podstream6.length).join("\t"));
         $(".emgGraph #pod7").html(podstream7.slice(podstream7.length - 11, podstream7.length).join("\t"));
+        // var ctx = document.getElementById("canvasemgGraph").getContext("2d");
+        // window.myLine = new Chart(ctx).Line(emgChartData, {responsive: true});
     });
 
-    Myo.on('imu', function(data){orientStreamx.push(data["orientation"]["x"]);
+    Myo.on('imu', function(data){
+        orientStreamx.push(data["orientation"]["x"]);
         orientStreamy.push(data["orientation"]["y"]);
         orientStreamz.push(data["orientation"]["z"]);
         orientStreamw.push(data["orientation"]["w"]);
@@ -115,14 +175,20 @@ function record() {
         $(".accelGraph #x").html(accelStreamx.slice(accelStreamx.length - 11, accelStreamx.length).join("\t"));
         $(".accelGraph #y").html(accelStreamy.slice(accelStreamy.length - 11, accelStreamy.length).join("\t"));
         $(".accelGraph #z").html(accelStreamz.slice(accelStreamz.length - 11, accelStreamz.length).join("\t"));
+        // var ctx = document.getElementById("canvasorientGraph").getContext("2d");
+        // window.myLine = new Chart(ctx).Line(orientChartData, {responsive: true});
+        // var ctx = document.getElementById("canvasgyroGraph").getContext("2d");
+        // window.myLine = new Chart(ctx).Line(gyroChartData, {responsive: true});
+        // var ctx = document.getElementById("canvasaccelGraph").getContext("2d");
+        // window.myLine = new Chart(ctx).Line(accelChartData, {responsive: true});
     });
 }
 
 function saveRec(time) {
     recording = false;
     $("#rec").html("Record");
-    var recordingObj = {
-        "name": prompt("Please enter a recording name", "Recording "+recordingsArray.length+1),
+    myoSport.child("recordings").push({
+        "name": prompt("Please enter a recording name", "Recording Name"),
         "time": (time - timestamp),
         "arm": "right",
         "color": prompt("Please enter a recording color", "red"),
@@ -144,29 +210,27 @@ function saveRec(time) {
         "podstream5": podstream5,
         "podstream6": podstream6,
         "podstream7": podstream7
-    };
-    $("#name").html($("#name").html() + " " + recordingObj["name"]);
-    $("#time").html($("#time").html() + " " + recordingObj["time"]);
-    $("#arm").html($("#arm").html() + " " + recordingObj["arm"]);
-    $("#color").html($("#color").html() + " " + recordingObj["color"]);
-    $("#dtwA").append($("<option></option>").attr("value", recordingsArray.length).text(recordingObj["name"]));
-    $("#dtwB").append($("<option></option>").attr("value", recordingsArray.length).text(recordingObj["name"]));
-    console.log(recordingObj);
-    recordingsArray.push(recordingObj);
-    draw(recordingObj['accelStreamx'], recordingObj['accelStreamy'], "xy", -1, 10, recordingObj["color"], 3);
-    draw(recordingObj['accelStreamx'], recordingObj['accelStreamz'], "xz", -1, 10, recordingObj["color"], 3);
-    draw(recordingObj['accelStreamy'], recordingObj['accelStreamz'], "yz", -1, 10, recordingObj["color"], 3);
+    });
+    // $("#name").html($("#name").html() + " " + recordingObj["name"]);
+    // $("#time").html($("#time").html() + " " + recordingObj["time"]);
+    // $("#arm").html($("#arm").html() + " " + recordingObj["arm"]);
+    // $("#color").html($("#color").html() + " " + recordingObj["color"]);
+    // $("#dtwA").append($("<option></option>").attr("value", recordingsArray.length).text(recordingObj["name"]));
+    // $("#dtwB").append($("<option></option>").attr("value", recordingsArray.length).text(recordingObj["name"]));
+    // draw(recordingObj['accelStreamx'], recordingObj['accelStreamy'], "xy", -1, 10, recordingObj["color"], 3);
+    // draw(recordingObj['accelStreamx'], recordingObj['accelStreamz'], "xz", -1, 10, recordingObj["color"], 3);
+    // draw(recordingObj['accelStreamy'], recordingObj['accelStreamz'], "yz", -1, 10, recordingObj["color"], 3);
 }
 
 function stopRec() {
     time = (new Date()).getTime();
+    Myo.off("emg");
+    Myo.off("imu");
     if(recording && confirm('Do you want to save this recording?'))
         saveRec(time);
     else if(!recording)
         alert("No recording to save!");
     $("#status").html("Myo Connected");
-    Myo.off("emg");
-    Myo.off("imu");
     orientStreamx = [];
     orientStreamy = [];
     orientStreamz = [];
@@ -263,31 +327,139 @@ function freedraw(plane, mult, speed, color, width, velA, velB, posA, posB, data
     return [velA, velB, posA, posB];
 }
 
-$("#draw").click(function() {
-    Myo.connect();
-    if(connected == false || recording)
-        alert("Please connect your Myo, or stop recording first.");
-    else if(!drawing) {
-        $("#draw").html("Stop");
-        var xy = [0, 0, 200, 200];
-        var xz = [0, 0, 200, 200];
-        var yz = [0, 0, 200, 200];
-        drawing = true;
-        document.getElementById("visualxy").getContext("2d").clearRect(0, 0, 400, 400);
-        document.getElementById("visualxz").getContext("2d").clearRect(0, 0, 400, 400);
-        document.getElementById("visualyz").getContext("2d").clearRect(0, 0, 400, 400);
-        Myo.on('accelerometer', function(data) {
-            xy = freedraw("xy", -1, 10, "orange", 3, xy[0], xy[1], xy[2], xy[3], data['x'], data['y']);
-            xz = freedraw("xz", -1, 10, "orange", 3, xz[0], xz[1], xz[2], xz[3], data['x'], data['z']);
-            yz = freedraw("yz", -1, 10, "orange", 3, yz[0], yz[1], yz[2], yz[3], data['y'], data['z']);
-            console.log("xy", xy[2], xy[3]);
-            console.log("xz", xz[2], xz[3]);
-            console.log("yz", yz[2], yz[3]);
-        });
-    }
-    else if (drawing) {
-        drawing = false;
-        $("#draw").html("Draw");
-        Myo.off("accelerometer");
-    }
-});
+// var emgChartData = {
+//     labels : [],
+//     datasets : [{
+//         label: "podstream0",
+//         fillColor : "rgba(0, 0, 0, 0)",
+//         strokeColor : "rgba(255,0,0,1)",
+//         pointColor : "rgba(200,0,0,1)",
+//         data : podstream0
+//     }, {
+//         label: "podstream1",
+//         fillColor : "rgba(0,0,0,0)",
+//         strokeColor : "rgba(0,255,0,1)",
+//         pointColor : "rgba(0,200,0,1)",
+//         data : podstream1
+//     }, {
+//         label: "podstream2",
+//         fillColor : "rgba(0,0,0,0)",
+//         strokeColor : "rgba(0,0,255,1)",
+//         pointColor : "rgba(0,0,200,1)",
+//         data : podstream2
+//     }, {
+//         label: "podstream3",
+//         fillColor : "rgba(0,0,0,0)",
+//         strokeColor : "rgba(200,200,200,1)",
+//         pointColor : "rgba(150,150,150,1)",
+//         data : podstream3
+//     }, {
+//         label: "podstream4",
+//         fillColor : "rgba(0, 0, 0, 0)",
+//         strokeColor : "rgba(255,0,0,1)",
+//         pointColor : "rgba(200,0,0,1)",
+//         data : podstream4
+//     }, {
+//         label: "podstream5",
+//         fillColor : "rgba(0,0,0,0)",
+//         strokeColor : "rgba(0,255,0,1)",
+//         pointColor : "rgba(0,200,0,1)",
+//         data : podstream5
+//     }, {
+//         label: "podstream6",
+//         fillColor : "rgba(0,0,0,0)",
+//         strokeColor : "rgba(0,0,255,1)",
+//         pointColor : "rgba(0,0,200,1)",
+//         data : podstream6
+//     }, {
+//         label: "podstream7",
+//         fillColor : "rgba(0,0,0,0)",
+//         strokeColor : "rgba(200,200,200,1)",
+//         pointColor : "rgba(150,150,150,1)",
+//         data : podstream7
+//     }]
+// };
+
+// var orientChartData = {
+//     labels : [],
+//     datasets : [{
+//         label: "orientStreamx",
+//         fillColor : "rgba(0, 0, 0, 0)",
+//         strokeColor : "rgba(255,0,0,1)",
+//         pointColor : "rgba(200,0,0,1)",
+//         data : orientStreamx
+//     }, {
+//         label: "orientStreamy",
+//         fillColor : "rgba(0,0,0,0)",
+//         strokeColor : "rgba(0,255,0,1)",
+//         pointColor : "rgba(0,200,0,1)",
+//         data : orientStreamy
+//     }, {
+//         label: "orientStreamz",
+//         fillColor : "rgba(0,0,0,0)",
+//         strokeColor : "rgba(0,0,255,1)",
+//         pointColor : "rgba(0,0,200,1)",
+//         data : orientStreamz
+//     }, {
+//         label: "orientStreamz",
+//         fillColor : "rgba(0,0,0,0)",
+//         strokeColor : "rgba(200,200,200,1)",
+//         pointColor : "rgba(150,150,150,1)",
+//         data : orientStreamz
+//     }]
+// };
+
+// var gyroChartData = {
+//     labels : [],
+//     datasets : [{
+//         label: "gyroStreamx",
+//         fillColor : "rgba(0, 0, 0, 0)",
+//         strokeColor : "rgba(255,0,0,1)",
+//         pointColor : "rgba(200,0,0,1)",
+//         data : gyroStreamx
+//     }, {
+//         label: "gyroStreamy",
+//         fillColor : "rgba(0,0,0,0)",
+//         strokeColor : "rgba(0,255,0,1)",
+//         pointColor : "rgba(0,200,0,1)",
+//         data : gyroStreamy
+//     }, {
+//         label: "gyroStreamz",
+//         fillColor : "rgba(0,0,0,0)",
+//         strokeColor : "rgba(0,0,255,1)",
+//         pointColor : "rgba(0,0,200,1)",
+//         data : gyroStreamz
+//     }]
+// };
+
+// var accelChartData = {
+//     labels : [],
+//     datasets : [{
+//         label: "accelStreamx",
+//         fillColor : "rgba(0, 0, 0, 0)",
+//         strokeColor : "rgba(255,0,0,1)",
+//         pointColor : "rgba(200,0,0,1)",
+//         data : accelStreamx
+//     }, {
+//         label: "accelStreamy",
+//         fillColor : "rgba(0,0,0,0)",
+//         strokeColor : "rgba(0,255,0,1)",
+//         pointColor : "rgba(0,200,0,1)",
+//         data : accelStreamy
+//     }, {
+//         label: "accelStreamz",
+//         fillColor : "rgba(0,0,0,0)",
+//         strokeColor : "rgba(0,0,255,1)",
+//         pointColor : "rgba(0,0,200,1)",
+//         data : accelStreamz
+//     }]
+// };
+
+// var ctx = document.getElementById("canvasemgGraph").getContext("2d");
+// window.myLine = new Chart(ctx).Line(emgChartData, {responsive: true});
+// var ctx = document.getElementById("canvasorientGraph").getContext("2d");
+// window.myLine = new Chart(ctx).Line(orientChartData, {responsive: true});
+// var ctx = document.getElementById("canvasgyroGraph").getContext("2d");
+// window.myLine = new Chart(ctx).Line(gyroChartData, {responsive: true});
+// var ctx = document.getElementById("canvasaccelGraph").getContext("2d");
+// window.myLine = new Chart(ctx).Line(accelChartData, {responsive: true});
