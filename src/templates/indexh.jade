@@ -1,0 +1,80 @@
+doctype html
+html(lang="en")
+    head
+        link(rel="icon", href="img/favicon.ico", type="image/x-icon")
+        link(rel="stylesheet", type="text/css", href="css/style.css")
+        title Myo Sport for user #{user}
+    body
+        h1 MyoSport for user #{user}:
+        h3 User #{user} has #{length} recordings stored.
+        h2#status Myo Not Connected
+        h2
+          .button#rec Record
+        h3 EMG Data
+        div.emgGraph
+            p#pod0 0
+            p#pod1 0
+            p#pod2 0
+            p#pod3 0
+            p#pod4 0
+            p#pod5 0
+            p#pod6 0
+            p#pod7 0
+        h3 Orientation Data
+        div.orientGraph
+            p#x 0
+            p#y 0
+            p#z 0
+            p#w 0
+        h3 Gyroscope Data
+        div.gyroGraph
+            p#x 0
+            p#y 0
+            p#z 0
+        h3 Accelerometer Data
+        div.accelGraph
+            p#x 0
+            p#y 0
+            p#z 0
+        br
+        h2 Latest Recordings
+        table(align="center" style="margin: 0px auto;")
+            tr#name
+            tr#time
+            tr#arm
+            tr#color
+        br
+        h2 DTW Recording Comparison
+        select#dtwA
+        select#dtwB
+        br
+        h2 All Recording Visualizations
+        h2
+            div.button#draw FreeDraw
+        canvas#visualxy(width="400", height="400", style="border:3px solid #FF7519;")
+        canvas#visualxz(width="400", height="400", style="border:3px solid #FF7519;")
+        canvas#visualyz(width="400", height="400", style="border:3px solid #FF7519;")
+        br
+        br
+        br
+        h2 DTW Recording Comparison
+        select#dtw
+        h2
+            div.button#compare Compare
+        div.dtwGraph
+            h4 AccelStreamX
+            p#accelStreamx 0
+            h4 AccelStreamY
+            p#accelStreamy 0
+            h4 AccelStreamZ
+            p#accelStreamz 0
+        br
+        script(src="https://cdn.firebase.com/js/client/2.2.9/firebase.js", )
+        script(src='js/jquery.js')
+        script(src='js/dtw.js')
+        script(src='js/json/cycle.js')
+        script(src='js/json/json_parse.js')
+        script(src='js/json/json_parse_state.js')
+        script(src='js/json/json2.js')
+        script(src='js/myo.js')
+        script(src='js/main.js')

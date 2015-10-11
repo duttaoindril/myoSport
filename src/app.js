@@ -8,18 +8,33 @@ var myo = require("myo");
 var jade = require("jade");
 
 var app = express();
+var myoSport = new Firebase("https://myosport.firebaseio.com/");
 
-app.get('/', function(req, res) {
-    res.send("<h1>I absolutely love Treehouse!<h1>");
+app.set('view engine', 'jade');
+app.set('views', __dirname + '/templates');
+
+app.get('/:un?', function(req, res) {
+    var username = req.params.un;
+    if(username == null)
+        username = "duttaoindril";
+    myoSport.child(username).on("value", function(data) {
+        var i = 0;
+        for (var key in data.val().recordings) {
+           i++;
+        }
+        res.render("index", {user: username, data: data.val(), length: i});
+    });
 });
 
 app.get('/dtwtest', function(req, res) {
-    res.send("<h1>I absolutely love Treehouse!<h1>");
+    res.send("<h1>I love Treehouse!<h1>");
 });
 
-app.get('/fbdump', function(req, res) {
-    var myoSport = new Firebase("https://myosport.firebaseio.com/");
-    myoSport.child("duttaoindril").on("value", function(data) {
+app.get('/fbdump/:un?', function(req, res) {
+    var username = req.params.un;
+    if(username == null)
+        username = "duttaoindril";
+    myoSport.child(username).on("value", function(data) {
         res.send(data.val());
     });
 });
