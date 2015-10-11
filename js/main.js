@@ -1,3 +1,8 @@
+//=========================================================================================================================================
+//=========================================================================================================================================
+// VARIABLE INITIALIZATION
+//=========================================================================================================================================
+//=========================================================================================================================================
 var orientStreamx = [];
 var orientStreamy = [];
 var orientStreamz = [];
@@ -23,13 +28,18 @@ var timestamp = 0;
 var username = prompt("Please enter your username", "duttaoindril");
 var myoSport = new Firebase("https://myosport.firebaseio.com/"+username);
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+// FIREBASE INITIALIZATION
+//=========================================================================================================================================
+//=========================================================================================================================================
 myoSport.on("value", function(snapshot) {
-    var i = 0;
     $("#name").html("");
     $("#name").html("");
     $("#time").html("");
     $("#arm").html("");
     $("#color").html("");
+    $("#dtw").html("");
     $("#dtwA").html("");
     $("#dtwB").html("");
     document.getElementById("visualxy").getContext("2d").clearRect(0, 0, 400, 400);
@@ -37,20 +47,25 @@ myoSport.on("value", function(snapshot) {
     document.getElementById("visualyz").getContext("2d").clearRect(0, 0, 400, 400);
     var recordings = snapshot.val().recordings;
     for (key in recordings) {
-        recording = recordings[key];
-        $("#name").html($("#name").html() + "<td>" + recording["name"] + "</td>");
-        $("#time").html($("#time").html() + "<td>" + recording["time"] + "</td>");
-        $("#arm").html($("#arm").html() + "<td>" + recording["arm"] + "</td>");
-        $("#color").html($("#color").html() + "<td>" + recording["color"] + "</td>");
-        $("#dtwA").append($("<option></option>").attr("value", i).text(recording["name"]));
-        $("#dtwB").append($("<option></option>").attr("value", i).text(recording["name"]));
-        draw(recording['accelStreamx'], recording['accelStreamy'], "xy", -1, 10, recording["color"], 3);
-        draw(recording['accelStreamx'], recording['accelStreamz'], "xz", -1, 10, recording["color"], 3);
-        draw(recording['accelStreamy'], recording['accelStreamz'], "yz", -1, 10, recording["color"], 3);
-        i++;
+        fbrecording = recordings[key];
+        $("#name").html($("#name").html() + "<td>" + fbrecording["name"] + "</td>");
+        $("#time").html($("#time").html() + "<td>" + fbrecording["time"] + "</td>");
+        $("#arm").html($("#arm").html() + "<td>" + fbrecording["arm"] + "</td>");
+        $("#color").html($("#color").html() + "<td>" + fbrecording["color"] + "</td>");
+        $("#dtw").append($("<option></option>").attr("value", key).text(fbrecording["name"]));
+        $("#dtwA").append($("<option></option>").attr("value", key).text(fbrecording["name"]));
+        $("#dtwB").append($("<option></option>").attr("value", key).text(fbrecording["name"]));
+        draw(fbrecording['accelStreamx'], fbrecording['accelStreamy'], "xy", -1, 10, fbrecording["color"], 3);
+        draw(fbrecording['accelStreamx'], fbrecording['accelStreamz'], "xz", -1, 10, fbrecording["color"], 3);
+        draw(fbrecording['accelStreamy'], fbrecording['accelStreamz'], "yz", -1, 10, fbrecording["color"], 3);
     }
 });
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+// MYO INITIALIZATION
+//=========================================================================================================================================
+//=========================================================================================================================================
 Myo.connect();
 
 Myo.on('connected', function(data, timestamp) {
@@ -66,6 +81,11 @@ Myo.on('disconnected', function() {
     $("#status").html("Myo <b>Not</b> Connected");
 });
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+// RECORDING BUTTON ONCLICK INITIALIZATION
+//=========================================================================================================================================
+//=========================================================================================================================================
 $("#rec").click(function() {
     Myo.connect();
     if(connected == false || drawing)
@@ -76,19 +96,22 @@ $("#rec").click(function() {
         stopRec();
 });
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+// FREE DRAW BUTTON ONCLICK INITIALIZATION
+//=========================================================================================================================================
+//=========================================================================================================================================
 $("#draw").click(function() {
     Myo.connect();
     if(connected == false || recording)
         alert("Please connect your Myo, or stop recording first.");
     else if(!drawing) {
         $("#draw").html("Stop");
+        $("#status").html("Myo Free Drawing");
         var xy = [0, 0, 200, 200];
         var xz = [0, 0, 200, 200];
         var yz = [0, 0, 200, 200];
         drawing = true;
-        document.getElementById("visualxy").getContext("2d").clearRect(0, 0, 400, 400);
-        document.getElementById("visualxz").getContext("2d").clearRect(0, 0, 400, 400);
-        document.getElementById("visualyz").getContext("2d").clearRect(0, 0, 400, 400);
         Myo.on('accelerometer', function(data) {
             xy = freedraw("xy", -1, 10, "orange", 3, xy[0], xy[1], xy[2], xy[3], data['x'], data['y']);
             xz = freedraw("xz", -1, 10, "orange", 3, xz[0], xz[1], xz[2], xz[3], data['x'], data['z']);
@@ -102,6 +125,68 @@ $("#draw").click(function() {
     }
 });
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+// DTW COMPARE BUTTON ONCLICK INITIALIZATION
+//=========================================================================================================================================
+//=========================================================================================================================================
+$("#compare").click(function() {
+    Myo.connect();
+    if(connected == false)
+        alert("Please connect your Myo, or stop drawing first.");
+    else if(!recording) {
+        var dtwrecording;
+        var accelx = [];
+        var accely = [];
+        var accelz = [];
+        var dtwvalx = [];
+        var dtwvaly = [];
+        var dtwvalz = [];
+        var xy = [0, 0, 200, 200];
+        var xz = [0, 0, 200, 200];
+        var yz = [0, 0, 200, 200];
+        var i = 0;
+        var dtw = new DTW();
+        recording = true;
+        drawing = true;
+        myoSport.on("value", function(snapshot) {
+            dtwrecording = snapshot.val().recordings[$("#dtw").val()];
+        });
+        $("#status").html("Myo Comparing");
+        $("#draw").html("Comparing");
+        $("#status").html("Myo Comparing Drawing");
+        Myo.on('accelerometer', function(data) {
+            $(".dtwGraph #accelStreamx").html(dtwvalx.join(" "));
+            $(".dtwGraph #accelStreamy").html(dtwvaly.join(" "));
+            $(".dtwGraph #accelStreamz").html(dtwvalz.join(" "));
+            accelx.push(data['x']);
+            accely.push(data['y']);
+            accelz.push(data['z']);
+            xy = freedraw("xy", -1, 10, "orange", 3, xy[0], xy[1], xy[2], xy[3], data['x'], data['y']);
+            xz = freedraw("xz", -1, 10, "orange", 3, xz[0], xz[1], xz[2], xz[3], data['x'], data['z']);
+            yz = freedraw("yz", -1, 10, "orange", 3, yz[0], yz[1], yz[2], yz[3], data['y'], data['z']);
+            if(i % 50 == 0 && i > 0) {
+                dtwvalx.push(dtw.compute(dtwrecording["accelStreamx"].slice(0, i), accelx));
+                dtwvaly.push(dtw.compute(dtwrecording["accelStreamy"].slice(0, i), accely));
+                dtwvalz.push(dtw.compute(dtwrecording["accelStreamz"].slice(0, i), accelz));
+            }
+            if (i > dtwrecording["accelStreamx"].length) {
+                $("#compare").html("Compare");
+                $("#status").html("Myo Connected");
+                Myo.off('accelerometer');
+                recording = false;
+            }
+            i++;
+        });
+    } else if (recording)
+        alert("I'm busy comparing!");
+});
+
+//=========================================================================================================================================
+//=========================================================================================================================================
+// DTW COMPUTE ARRAYS BUTTON ONCLICK INITIALIZATION
+//=========================================================================================================================================
+//=========================================================================================================================================
 $("#dtwcompute").click(function() {
     var dtw = new DTW();
     myoSport.child(username).on("value", function(snapshot) {
@@ -127,6 +212,11 @@ $("#dtwcompute").click(function() {
     });
 });
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+// RECORD MYO FUNCTION
+//=========================================================================================================================================
+//=========================================================================================================================================
 function record() {
     recording = true;
     timestamp = (new Date()).getTime();
@@ -184,6 +274,11 @@ function record() {
     });
 }
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+// SAVE RECORDING FIREBASE FUNCTION
+//=========================================================================================================================================
+//=========================================================================================================================================
 function saveRec(time) {
     recording = false;
     $("#rec").html("Record");
@@ -222,6 +317,11 @@ function saveRec(time) {
     // draw(recordingObj['accelStreamy'], recordingObj['accelStreamz'], "yz", -1, 10, recordingObj["color"], 3);
 }
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+// STOP RECORDING MYO FUNCTION
+//=========================================================================================================================================
+//=========================================================================================================================================
 function stopRec() {
     time = (new Date()).getTime();
     Myo.off("emg");
@@ -270,6 +370,11 @@ function stopRec() {
     $(".accelGraph #z").html("0");
 }
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+// DRAW ENTIRE GRAPH DRAW FUNCTION
+//=========================================================================================================================================
+//=========================================================================================================================================
 function draw(dataA, dataB, plane, mult, speed, color, width) {
     var canvas = document.getElementById("visual"+plane);
     var ctx = canvas.getContext("2d");
@@ -306,6 +411,11 @@ function draw(dataA, dataB, plane, mult, speed, color, width) {
     }, speed);
 }
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+// DRAW GRAPH CHUNK FUNCTION
+//=========================================================================================================================================
+//=========================================================================================================================================
 function freedraw(plane, mult, speed, color, width, velA, velB, posA, posB, dataA, dataB) {
     var canvas = document.getElementById("visual"+plane);
     var ctx = canvas.getContext("2d");
@@ -327,6 +437,11 @@ function freedraw(plane, mult, speed, color, width, velA, velB, posA, posB, data
     return [velA, velB, posA, posB];
 }
 
+//=========================================================================================================================================
+//=========================================================================================================================================
+// POSSIBLE REPLACE NUMBERS WITH GRAPH COMMENTED OUT CODE
+//=========================================================================================================================================
+//=========================================================================================================================================
 // var emgChartData = {
 //     labels : [],
 //     datasets : [{

@@ -78,11 +78,21 @@
         <h4 id="podstream7">podstream7 cost: 0</h4>
         <br>
         <h2>All Recording Visualizations</h2>
-        <h2><div class="button" id="draw">Draw</div></h2>
+        <h2><div class="button" id="draw">FreeDraw</div></h2>
         <canvas id="visualxy" width="400" height="400" style="border:3px solid #FF7519;"></canvas>
         <canvas id="visualxz" width="400" height="400" style="border:3px solid #FF7519;"></canvas>
         <canvas id="visualyz" width="400" height="400" style="border:3px solid #FF7519;"></canvas>
-        <br><br>
+        <br><br><br>
+        <h2>DTW Recording Comparison</h2>
+        <select id="dtw">
+        </select>
+        <h2><div class="button" id="compare">Compare</div></h2>
+        <div class='dtwGraph'>
+            <p id='accelStreamx'>0</p>
+            <p id='accelStreamy'>0</p>
+            <p id='accelStreamz'>0</p>
+        </div>
+        <br>
         <script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script>
         <script src='js/jquery.js'></script>
         <script src='js/dtw.js'></script>
@@ -91,7 +101,7 @@
         <script src='js/json/json_parse_state.js'></script>
         <script src='js/json/json2.js'></script>
         <script src='js/myo.js'></script>
-        <script src="js/chart.min.js"></script>
+        <!-- <script src="js/chart.min.js"></script> -->
         <script src='js/main.js'></script>
     </body>
 </html>
