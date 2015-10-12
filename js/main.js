@@ -1,8 +1,17 @@
+<<<<<<< Updated upstream
 //=========================================================================================================================================
 //=========================================================================================================================================
 // VARIABLE INITIALIZATION
 //=========================================================================================================================================
 //=========================================================================================================================================
+=======
+//var myoSport = new Firebase("https://myosport.firebaseio.com/");
+Parse.initialize("jphlO58koRaLLMPkLXFjKRmwezM96giWv2O5GPJj", "WGs1wWm7S8ioMZFBW3M5sE5JSwus2f3jqvuRKxXD");
+
+var Recording = Parse.Object.extend("Recording");
+var recording1 = new Recording();
+
+>>>>>>> Stashed changes
 var orientStreamx = [];
 var orientStreamy = [];
 var orientStreamz = [];
@@ -282,6 +291,7 @@ function record() {
 function saveRec(time) {
     recording = false;
     $("#rec").html("Record");
+<<<<<<< Updated upstream
     myoSport.child("recordings").push({
         "name": prompt("Please enter a recording name", "Recording Name"),
         "time": (time - timestamp),
@@ -315,6 +325,52 @@ function saveRec(time) {
     // draw(recordingObj['accelStreamx'], recordingObj['accelStreamy'], "xy", -1, 10, recordingObj["color"], 3);
     // draw(recordingObj['accelStreamx'], recordingObj['accelStreamz'], "xz", -1, 10, recordingObj["color"], 3);
     // draw(recordingObj['accelStreamy'], recordingObj['accelStreamz'], "yz", -1, 10, recordingObj["color"], 3);
+=======
+    recording1.set("name", prompt("Please enter a recording name", "Recording "+recordingsArray.length+1));
+    recording1.set("time", (time - timestamp));
+    recording1.set("color": prompt("Please enter a recording color", "red"));
+    recording1.set("orientStreamx", orientStreamx);
+    recording1.set("orientStreamy", orientStreamy);
+    recording1.set("orientStreamz", orientStreamz);
+    recording1.set("orientStreamw", orientStreamw);
+    recording1.set("gyroStreamx", gyroStreamx);
+    recording1.set("gyroStreamy", gyroStreamy);
+    recording1.set("gyroStreamz", gyroStreamz);
+    recording1.set("accelStreamx", accelStreamx);
+    recording1.set("accelStreamy", accelStreamy);
+    recording1.set("accelStreamz", accelStreamz);
+    recording1.set("podstream0", podstream0);
+    recording1.set("podstream1", podstream1);
+    recording1.set("podstream2", podstream2);
+    recording1.set("podstream3", podstream3);
+    recording1.set("podstream4", podstream4);
+    recording1.set("podstream5", podstream5);
+    recording1.set("podstream6", podstream6);
+    recording1.set("podstream7", podstream7
+
+    recording1.save(null, {
+        success: function(recording1) {
+        // Execute any logic that should take place after the object is saved.
+        alert('New object created with objectId: ' + recording1.id);
+        },
+        error: function(recording1, error) {
+        // Execute any logic that should take place if the save fails.
+        alert('Failed to create new object, with error code: ' + error.message);
+        // error is a Parse.Error with an error code and message.
+        }
+    });
+    $("#name").html($("#name").html() + " " + recordingObj["name"]);
+    $("#time").html($("#time").html() + " " + recordingObj["time"]);
+    $("#arm").html($("#arm").html() + " " + recordingObj["arm"]);
+    $("#color").html($("#color").html() + " " + recordingObj["color"]);
+    $("#dtwA").append($("<option></option>").attr("value", recordingsArray.length).text(recordingObj["name"]));
+    $("#dtwB").append($("<option></option>").attr("value", recordingsArray.length).text(recordingObj["name"]));
+    console.log(recordingObj);
+    recordingsArray.push(recordingObj);
+    draw(recordingObj['accelStreamx'], recordingObj['accelStreamy'], "xy", -1, 10, recordingObj["color"], 3);
+    draw(recordingObj['accelStreamx'], recordingObj['accelStreamz'], "xz", -1, 10, recordingObj["color"], 3);
+    draw(recordingObj['accelStreamy'], recordingObj['accelStreamz'], "yz", -1, 10, recordingObj["color"], 3);
+>>>>>>> Stashed changes
 }
 
 //=========================================================================================================================================
