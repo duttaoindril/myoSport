@@ -1,0 +1,84 @@
+extends ./layout.jade
+block content
+        h2
+          .button#rec Record
+        h3 EMG Data
+        div.emgGraph
+            p#pod0 0
+            p#pod1 0
+            p#pod2 0
+            p#pod3 0
+            p#pod4 0
+            p#pod5 0
+            p#pod6 0
+            p#pod7 0
+        h3 Orientation Data
+        div.orientGraph
+            p#x 0
+            p#y 0
+            p#z 0
+            p#w 0
+        h3 Gyroscope Data
+        div.gyroGraph
+            p#x 0
+            p#y 0
+            p#z 0
+        h3 Accelerometer Data
+        div.accelGraph
+            p#x 0
+            p#y 0
+            p#z 0
+        br
+        h2 Latest Recordings
+        table(align="center" style="margin: 0px auto;")
+            tr#name
+            tr#time
+            tr#arm
+            tr#color
+        br
+        h2 DTW Recording Comparison
+        select#dtwA
+        select#dtwB
+        br
+        h2
+            .button#dtwcompute Compute
+        h4#orientStreamx orientStreamx cost: 0
+        h4#orientStreamy orientStreamy cost: 0
+        h4#orientStreamz orientStreamz cost: 0
+        h4#orientStreamw orientStreamw cost: 0
+        h4#gyroStreamx gyroStreamx cost: 0
+        h4#gyroStreamy gyroStreamy cost: 0
+        h4#gyroStreamz gyroStreamz cost: 0
+        h4#accelStreamx accelStreamx cost: 0
+        h4#accelStreamy accelStreamy cost: 0
+        h4#accelStreamz accelStreamz cost: 0
+        h4#podstream0 podstream0 cost: 0
+        h4#podstream1 podstream1 cost: 0
+        h4#podstream2 podstream2 cost: 0
+        h4#podstream3 podstream3 cost: 0
+        h4#podstream4 podstream4 cost: 0
+        h4#podstream5 podstream5 cost: 0
+        h4#podstream6 podstream6 cost: 0
+        h4#podstream7 podstream7 cost: 0
+        br
+        h2 All Recording Visualizations
+        h2
+            div.button#draw FreeDraw
+        canvas#visualxy(width="400", height="400", style="border:3px solid #FF7519;")
+        canvas#visualxz(width="400", height="400", style="border:3px solid #FF7519;")
+        canvas#visualyz(width="400", height="400", style="border:3px solid #FF7519;")
+        br
+        br
+        br
+        h2 DTW Recording Comparison
+        select#dtw
+        h2
+            div.button#compare Compare
+        div.dtwGraph
+            h4 AccelStreamX
+            p#accelStreamx 0
+            h4 AccelStreamY
+            p#accelStreamy 0
+            h4 AccelStreamZ
+            p#accelStreamz 0
+        br
