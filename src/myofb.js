@@ -4,9 +4,14 @@
 //===============================================================
 //===============================================================
 var firebase = require("firebase");
+var prompt = require("readline-sync");
+var promptly = require("promptly");
 var DTW = require("dtw");
 var myo = require("myo");
 myo.onError = function() {console.log("Error connecting Myo. Try refreshing the page and/or restarting Myo Connect.\n")}
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
+
 //===============================================================
 //===============================================================
 // GENERAL GLOBAL VALUES INITIALIZATION
@@ -16,7 +21,9 @@ var timestamp = 0;
 var username = process.argv[2];
 if (username == null)
     username = "duttaoindril";
-console.log("\nLogged into user account of ", username, "\n");
+    //username = prompt.question('\nPlease provide your firebase login: ');
+console.log("\nLogged into user account of", username, "\n");
+
 //===============================================================
 //===============================================================
 // FIREBASE GLOBAL VALUES INITIALIZATION
@@ -31,14 +38,17 @@ var name = "";
 var color = "";
 var arm = "";
 var direction = "";
-//var orientationoffset = {};
+var orientationoffset = {};
+
 //===============================================================
 //===============================================================
 // FIREBASE DATA PULLS
 //===============================================================
 //===============================================================
 myoSport.child("recordings").on('value', function(snapshot) {
-    for (key in snapshot.val()) {keys.push(key);}
+    for (key in snapshot.val()) {
+        keys.push(key);
+    }
 });
 myoSport.child("connected").on('value', function(snapshot) {
     connected = snapshot.val();
@@ -55,8 +65,9 @@ myoSport.child("details").on('value', function(snapshot) {
     color = data.myocolor;
     arm = data.myoarm;
     direction = data.myodirection;
-    //orientationoffset = data.myoorientationoffset;
+    orientationoffset = data.myoorientationoffset;
 });
+
 //===============================================================
 //===============================================================
 // MYO FUNCTIONS; UPDATES FIREBASE
@@ -67,15 +78,10 @@ myo.connect();
 // On connect event handler; vibrate once and set myo configs and push connected as true to firebase
 myo.on('connected', function(data, timestamp) {
     this.streamEMG(true);
-    this.setLockingPolicy("none");
     this.vibrate("short");
     myoSport.child("connected").set(true);
-    //console.log(this.requestBatteryLevel());
-    if(this.batteryLevel < 10)
-        console.log("Please Charge your Myo! ", this.batteryLevel);
-    //if(this.warm < 10);
+    console.log("Myo Connected Successfully!\n");
 });
-// Check out all the info you can get from the myo and screw yourself over lol bro sigh
 // On arm synced event handler; vibrate twice and send arm, direction, and offset to firebase
 myo.on('arm_synced', function() {
     this.vibrate("short");
@@ -83,6 +89,7 @@ myo.on('arm_synced', function() {
     myoSport.child("details/myoarm").set(this.arm);
     myoSport.child("details/myodirection").set(this.direction);
     myoSport.child("details/myoorientationoffset").set(this.orientationOffset);
+    console.log("Myo Synced Successfully!\n");
 });
 // On arm unsynced event handler; vibrate thrice and reset arm, direction, and offset on firebase
 myo.on('arm_unsynced', function() {
@@ -92,25 +99,14 @@ myo.on('arm_unsynced', function() {
     myoSport.child("details/myoarm").set("unknown");
     myoSport.child("details/myodirection").set("unknown");
     myoSport.child("details/myoorientationoffset").set("unknown");
+    console.log("Oh no! Myo Unsynced!\n");
 });
 // On disconnect event handler; push connected as false to firebase
 myo.on('disconnected', function() {
     myoSport.child("connected").set(false);
+    console.log("Oh no! Myo Disconnected!\n");
 });
-//===============================================================
-//===============================================================
-// GENERAL NODE COMMANDER; PROVIDES OTHER FUNCS INTERFACE
-//===============================================================
-//===============================================================
-// Assign into commander somehow
-//Simple Fireabase Data logging
-function logdat(context) {
-    console.log(context)
-    console.log(keys);
-    console.log(connected, typeof connected);
-    console.log(recording, typeof recording);
-    console.log();
-}
+
 //===============================================================
 //===============================================================
 // GENERAL MYO FUNCTIONS; UPDATES FIREBASE
@@ -142,7 +138,7 @@ function record() {
     var podstream5 = [];
     var podstream6 = [];
     var podstream7 = [];
-    console.log("Recoring...");
+    console.log("Recording...");
     timestamp = (new Date()).getTime();
     myoSport.child("halt").on('value', function(snapshot) {
         halt = snapshot.val();
@@ -174,16 +170,13 @@ function record() {
             Myo.off("emg");
             Myo.off("imu");
             myoSport.child("recording").set(false);
-
-            //Do something to get name and color
-
             myoSport.child("recordings").push({
                 "name": name,
                 "time": (time - timestamp),
                 "arm": arm,
                 "color": color,
                 "direction": direction,
-                //"orientationoffset": orientationoffset,
+                "orientationoffset": orientationoffset,
                 "orientStreamx": orientStreamx,
                 "orientStreamy": orientStreamy,
                 "orientStreamz": orientStreamz,
@@ -266,3 +259,31 @@ function liveCompare(key, interval) {
         });
     });
 }
+//===============================================================
+//===============================================================
+// GENERAL NODE COMMANDER; PROVIDES OTHER FUNCS INTERFACE
+//===============================================================
+//===============================================================
+//Simple Fireabase Data logging
+function logdat(context) {
+    console.log(context)
+    console.log(keys);
+    console.log(connected, typeof connected);
+    console.log(recording, typeof recording);
+    console.log(halt, typeof halt);
+    console.log(name, typeof name);
+    console.log(color, typeof color);
+    console.log(arm, typeof arm);
+    console.log(direction, typeof direction);
+    console.log(orientationoffset, typeof orientationoffset);
+}
+
+var go = true;
+
+var ringBell = function ringBell()
+{
+  console.log('ring ring ring');
+}
+eventEmitter.on('doorOpen', ringBell);
+
+eventEmitter.emit('doorOpen');
