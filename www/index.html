@@ -1,0 +1,120 @@
+<html>
+    <head>
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <!-- <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/> -->
+        <link rel="stylesheet" type="text/css" href="css/vis.css" />
+        <link rel="stylesheet" type="text/css" href="css/style.css" />
+        <title>Learn Motion&#x2122;</title>
+    </head>
+    <body>
+        <h1>LearnMotion&#x2122;</h1>
+        <h2 id="status">Myo Not Connected</h2>
+        <h2><div class="button" id="rec">Record</div></h2>
+        <!-- <h3>EMG Data</h3>
+        <div class='emgGraph'>
+            <canvas id="canvasemgGraph" height="1" width="10"></canvas>
+            <p id='pod0'>0</p>
+            <p id='pod1'>0</p>
+            <p id='pod2'>0</p>
+            <p id='pod3'>0</p>
+            <p id='pod4'>0</p>
+            <p id='pod5'>0</p>
+            <p id='pod6'>0</p>
+            <p id='pod7'>0</p>
+        </div>
+        <h3>Orientation Data</h3>
+        <div class='orientGraph'>
+            <canvas id="canvasorientGraph" height="1" width="10"></canvas>
+            <p id='x'>0</p>
+            <p id='y'>0</p>
+            <p id='z'>0</p>
+            <p id='w'>0</p>
+        </div>
+        <h3>Gyroscope Data</h3>
+        <div class='gyroGraph'>
+            <canvas id="canvasgyroGraph" height="1" width="10"></canvas>
+            <p id='x'>0</p>
+            <p id='y'>0</p>
+            <p id='z'>0</p>
+        </div> -->
+        <h3>Accelerometer Data</h3>
+        <div class='accelGraph'>
+            <!-- <canvas id="canvasaccelGraph" height="1" width="10"></canvas> -->
+            <p id='x'>0</p>
+            <p id='y'>0</p>
+            <p id='z'>0</p>
+        </div>
+        <br>
+        <h2>Latest Recording</h2>
+        <table align="center" style="margin: 0px auto;">
+            <tr id="name"></tr>
+            <tr id="time"></tr>
+            <tr id="arm"></tr>
+            <tr id="color"></tr>
+        </table>
+        <br>
+        <h2>DTW Recording Comparison</h2>
+        <select id="dtwA">
+        </select>
+        <select id="dtwB">
+        </select>
+        <br>
+        <h2><div class="button" id="dtwcompute">Compute</div></h2>
+        <!-- <h4 id="orientStreamx">orientStreamx cost: 0</h4> -->
+        <!-- <h4 id="orientStreamy">orientStreamy cost: 0</h4> -->
+        <!-- <h4 id="orientStreamz">orientStreamz cost: 0</h4> -->
+        <!-- <h4 id="orientStreamw">orientStreamw cost: 0</h4> -->
+        <!-- <h4 id="gyroStreamx">gyroStreamx cost: 0</h4> -->
+        <!-- <h4 id="gyroStreamy">gyroStreamy cost: 0</h4> -->
+        <!-- <h4 id="gyroStreamz">gyroStreamz cost: 0</h4> -->
+        <h4 id="accelStreamx">accelStreamx cost: 0</h4>
+        <h4 id="accelStreamy">accelStreamy cost: 0</h4>
+        <h4 id="accelStreamz">accelStreamz cost: 0</h4>
+        <!-- <h4 id="podstream0">podstream0 cost: 0</h4> -->
+        <!-- <h4 id="podstream1">podstream1 cost: 0</h4> -->
+        <!-- <h4 id="podstream2">podstream2 cost: 0</h4> -->
+        <!-- <h4 id="podstream3">podstream3 cost: 0</h4> -->
+        <!-- <h4 id="podstream4">podstream4 cost: 0</h4> -->
+        <!-- <h4 id="podstream5">podstream5 cost: 0</h4> -->
+        <!-- <h4 id="podstream6">podstream6 cost: 0</h4> -->
+        <!-- <h4 id="podstream7">podstream7 cost: 0</h4> -->
+        <br>
+        <h2>DTW Live Comparison</h2>
+        <select id="dtw">
+        </select>
+        <h2><div class="button" id="compare">Compare</div></h2>
+        <div class='dtwGraph'>
+            <h4>AccelStreamX</h4>
+            <p id='accelStreamx'>0</p>
+            <h4>AccelStreamY</h4>
+            <p id='accelStreamy'>0</p>
+            <h4>AccelStreamZ</h4>
+            <p id='accelStreamz'>0</p>
+        </div>
+        <br>
+        <h2>All Recording Visualizations</h2>
+        <h2><div class="button" id="draw">FreeDraw</div></h2>
+        <canvas id="visualxy" width="400" height="400" style="border:3px solid #FF7519;"></canvas>
+        <canvas id="visualxz" width="400" height="400" style="border:3px solid #FF7519;"></canvas>
+        <canvas id="visualyz" width="400" height="400" style="border:3px solid #FF7519;"></canvas>
+        <br>
+        <select id="graphselect" onchange="refresh3dGraph()">
+        </select>
+        <br><br>
+        <div id="mygraph" align="center"></div>
+        <br><br>
+        <script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script>
+        <script src='js/jquery.js'></script>
+        <script type="text/javascript" src="js/materialize.min.js"></script>
+        <script src='js/dtw.js'></script>
+        <script src='js/json/cycle.js'></script>
+        <script src='js/json/json_parse.js'></script>
+        <script src='js/json/json_parse_state.js'></script>
+        <script src='js/json/json2.js'></script>
+        <script src='js/myo.js'></script>
+        <script src="js/vis.js"></script>
+        <script src='js/main.js'></script>
+    </body>
+</html>
