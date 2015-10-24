@@ -21,6 +21,7 @@ var podstream4 = [];
 var podstream5 = [];
 var podstream6 = [];
 var podstream7 = [];
+
 var username = $(location).attr('href');
 if (username.indexOf("?") < 0)
     username = prompt("Username", "duttaoindril");
