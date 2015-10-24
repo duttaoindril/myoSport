@@ -282,7 +282,7 @@ var go = true;
 
 var ringBell = function ringBell()
 {
-  console.log('ring ring ring');
+    console.log('ring ring ring');
 }
 eventEmitter.on('doorOpen', ringBell);
 
