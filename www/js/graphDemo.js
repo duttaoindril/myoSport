@@ -57,25 +57,19 @@ function draw3D(dataA, dataB, dataC, plane, mult, speed, color, width) {
         velA = velA + mult*dataA[count] * dt;
         velB = velB + mult*dataB[count] * dt;
         velC = velC + mult*dataC[count] * dt;
-
         posA[count] = posA[count-1] + (oldVelA + velA) * 0.5 * dt;
         posB[count] = posB[count-1] + (oldVelB + velB) * 0.5 * dt;
         posC[count] = posC[count-1] + (oldVelC + velC) * 0.5 * dt;
         count++;
     }
     console.log('done populating...');
-    
     var data = new vis.DataSet();
-
-    // create some nice looking data with sin/cos
     for (var t = 0; t < posA.length-1; t++) {
       var x = posA[t];
       var y = posB[t];
       var z = posC[t];
       data.add({x:x, y:y, z:z});
     }
-
-    // specify options
     var options = {
       width:  '400px',
       height: '400px',
@@ -83,12 +77,10 @@ function draw3D(dataA, dataB, dataC, plane, mult, speed, color, width) {
       showPerspective: false,
       showGrid: true,
       keepAspectRatio: true,
-      verticalRatio: 1.0
+      verticalRatio: 1.0,
+      dataColor.stroke: color
     };
-
-    // create our graph
     var container = document.getElementById('mygraph');
     var graph = new vis.Graph3d(container, data, options);
-
     graph.setCameraPosition(0.4, undefined, undefined);
 }

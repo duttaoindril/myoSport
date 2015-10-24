@@ -3,25 +3,21 @@
     <head>
         <link rel="icon" href="img/favicon.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/style.css" />
-        <link rel="stylesheet" type="text/css" href="css/vis.min.css" />
-
-
+        <link rel="stylesheet" type="text/css" href="css/vis.css" />
         <title>Myo Learn Graphing Visualization</title>
-
-        <h2>3D Recording Visualizer</h2>
-
-        <div id="mygraph" align="center"></div>
-        <br><br><br>
-
-        <select id="data_select"></select>
-        <h2><div class="button" id="draw3D">Draw 3D Line Plot</div></h2>
-
-        </select>
     </head>
     <body>
         <h1>Myo Learn</h1>
+        <h2>3D Recording Visualizer</h2>
+        <div id="mygraph" align="center"></div>
+        <br><br><br>
+        <select id="data_select">
+        </select>
+        <h2>
+            <div class="button" id="draw3D">Draw 3D Line Plot</div>
+        </h2>
+        </select>
         <script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script>
-        <br><br>
         <script src='js/jquery.js'></script>
         <script src='js/dtw.js'></script>
         <script src='js/json/cycle.js'></script>
@@ -29,9 +25,7 @@
         <script src='js/json/json_parse_state.js'></script>
         <script src='js/json/json2.js'></script>
         <script src='js/myo.js'></script>
- 
-        <!-- <script src="js/chart.min.js"></script> -->
-        <script src="js/vis.min.js"></script>
+        <script src="js/vis.js"></script>
         <script src="js/graphDemo.js"></script>
     </body>
 </html>
