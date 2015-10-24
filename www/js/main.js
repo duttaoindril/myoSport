@@ -22,6 +22,10 @@ var podstream5 = [];
 var podstream6 = [];
 var podstream7 = [];
 
+var check = 0.075;
+var oriCurrent = [0, 0, 0, 0];
+var matching = [0.99102783203125, -0.10107421875, 0.02056884765625, 0.08453369140625, false];
+
 var username = $(location).attr('href');
 if (username.indexOf("?") < 0)
     username = prompt("Username", "duttaoindril");
@@ -34,6 +38,7 @@ var keys = [];
 var connected = false;
 var recording = false;
 var drawing = false;
+var tracking = false;
 var timestamp = 0;
 var name = "";
 var color = "";
@@ -148,7 +153,8 @@ Myo.on('disconnected', function() {
 //===============================================================
 //===============================================================
 $("#rec").click(function() {
-    Myo.connect();
+    if(!connected)
+        Myo.connect();
     if(connected == false || drawing)
         alert("Please connect your Myo, or stop drawing first.");
     else if(!recording)
@@ -163,7 +169,8 @@ $("#rec").click(function() {
 //===============================================================
 //===============================================================
 $("#draw").click(function() {
-    Myo.connect();
+    if(!connected)
+        Myo.connect();
     if(connected == false || recording)
         alert("Please connect your Myo, or stop recording first.");
     else if(!drawing) {
@@ -192,7 +199,8 @@ $("#draw").click(function() {
 //===============================================================
 //===============================================================
 $("#compare").click(function() {
-    Myo.connect();
+    if(!connected)
+        Myo.connect();
     if(connected == false || drawing)
         alert("Please connect your Myo, or stop drawing first.");
     else if(!recording) {
@@ -277,6 +285,60 @@ $("#dtwcompute").click(function() {
         });
     });
 });
+
+//===============================================================
+//===============================================================
+// RECORDING BUTTON ONCLICK INITIALIZATION
+//===============================================================
+//===============================================================
+$("#trackori").click(function() {
+    var boom = 0;
+    if(!connected)
+        Myo.connect();
+    if(connected == false || recording || drawing)
+        alert("Please connect your Myo, or stop recording or drawing first.");
+    else if(!tracking) {
+        tracking = true;
+        Myo.on("orientation", function(data) {
+            oriCurrent[0] = data["w"];
+            oriCurrent[1] = data["x"];
+            oriCurrent[2] = data["y"];
+            oriCurrent[3] = data["z"];
+            $(".oriGraph #w").html(data["w"]);
+            $(".oriGraph #x").html(data["x"]);
+            $(".oriGraph #y").html(data["y"]);
+            $(".oriGraph #z").html(data["z"]);
+            matching[4] = true;
+            for (var i = 0; i < oriCurrent.length; i++)
+                if((oriCurrent[i] - matching[i]) < -check || (oriCurrent[i] - matching[i]) > check)
+                    matching[4] = false;
+            $(".oriGraph #check").html(""+matching[4]);
+            if(matching[4]) {
+                setTimeout(function() {
+                    resetOri();
+                    matching[4] = false;
+                    Myo.myos[0].vibrate("short");
+                    console.log("COMPARING!");
+                }, 1000);
+            }
+        });
+    }
+    else if (tracking)
+        resetOri();
+});
+
+function resetOri() {
+    Myo.off("orientation");
+    tracking = false;
+    oriCurrent[0] = 0;
+    oriCurrent[1] = 0;
+    oriCurrent[2] = 0;
+    oriCurrent[3] = 0;
+    $(".oriGraph #w").html("0");
+    $(".oriGraph #x").html("0");
+    $(".oriGraph #y").html("0");
+    $(".oriGraph #z").html("0");
+}
 
 //===============================================================
 //===============================================================
