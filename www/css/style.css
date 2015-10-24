@@ -18,7 +18,11 @@ canvas, #mygraphs {
 }
 
 #graphselect {
+<<<<<<< HEAD
     margin-top: 1%;
+=======
+    margin-top: 3%;
+>>>>>>> origin/gh-pages
 }
 
 .button {

@@ -14,6 +14,7 @@
         <h2><div class="button" id="rec">Record</div></h2>
         <!-- <h3>EMG Data</h3>
         <div class='emgGraph'>
+            <canvas id="canvasemgGraph" height="1" width="10"></canvas>
             <p id='pod0'>0</p>
             <p id='pod1'>0</p>
             <p id='pod2'>0</p>
@@ -25,6 +26,7 @@
         </div>
         <h3>Orientation Data</h3>
         <div class='orientGraph'>
+            <canvas id="canvasorientGraph" height="1" width="10"></canvas>
             <p id='x'>0</p>
             <p id='y'>0</p>
             <p id='z'>0</p>
@@ -32,12 +34,14 @@
         </div>
         <h3>Gyroscope Data</h3>
         <div class='gyroGraph'>
+            <canvas id="canvasgyroGraph" height="1" width="10"></canvas>
             <p id='x'>0</p>
             <p id='y'>0</p>
             <p id='z'>0</p>
         </div> -->
         <h3>Accelerometer Data</h3>
         <div class='accelGraph'>
+            <!-- <canvas id="canvasaccelGraph" height="1" width="10"></canvas> -->
             <p id='x'>0</p>
             <p id='y'>0</p>
             <p id='z'>0</p>
@@ -87,6 +91,11 @@
         <!-- <h4 id="podstream6">podstream6 cost: 0</h4> -->
         <!-- <h4 id="podstream7">podstream7 cost: 0</h4> -->
         <br>
+        <h2>3D Recording Visualizations </h2>
+        <div id="mygraph" align="center"></div>
+        <select id="graphselect" onchange="refresh3dGraph()">
+        </select>
+        <br><br>
         <h2>DTW Live Comparison</h2>
         <select id="dtw">
         </select>
@@ -105,11 +114,6 @@
         <canvas id="visualxy" width="400" height="400" style="border:3px solid #FF7519;"></canvas>
         <canvas id="visualxz" width="400" height="400" style="border:3px solid #FF7519;"></canvas>
         <canvas id="visualyz" width="400" height="400" style="border:3px solid #FF7519;"></canvas>
-        <br>
-        <select id="graphselect" onchange="refresh3dGraph()">
-        </select>
-        <br><br>
-        <div id="mygraph" align="center"></div>
         <br><br>
         <script src="https://cdn.firebase.com/js/client/2.2.9/firebase.js"></script>
         <script src='js/jquery.js'></script>
