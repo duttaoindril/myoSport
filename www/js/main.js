@@ -24,7 +24,7 @@ var podstream7 = [];
 
 var check = 0.075;
 var oriCurrent = [0, 0, 0, 0];
-var matching = [0.99102783203125, -0.10107421875, 0.02056884765625, 0.08453369140625, false];
+var matching = [0.25714111328125, -0.14739990234375, 0.3974609375, 0.868408203125, false];
 
 var username = $(location).attr('href');
 if (username.indexOf("?") < 0)
@@ -615,7 +615,7 @@ function refresh3dGraph() {
         draw3D(r['accelStreamx'], r['accelStreamy'], r['accelStreamz'], "xyz", -1, 10, r["color"], 3);
     });
 }
-
+/*
 Selina.eshraghi@gmail.com
 
 sarasubbanna@gmail.com
@@ -627,4 +627,4 @@ sarasubbanna@gmail.com
         Vibe.vibrate('double');
         Accel.off('data');
     }
-
+*/
