@@ -195,7 +195,7 @@ $("#draw").click(function() {
 
 //===============================================================
 //===============================================================
-// DTW COMPARE BUTTON ONCLICK INITIALIZATION
+// DTW  BUTTON ONCLICK INITIALIZATION
 //===============================================================
 //===============================================================
 $("#compare").click(function() {
@@ -615,3 +615,16 @@ function refresh3dGraph() {
         draw3D(r['accelStreamx'], r['accelStreamy'], r['accelStreamz'], "xyz", -1, 10, r["color"], 3);
     });
 }
+
+Selina.eshraghi@gmail.com
+
+sarasubbanna@gmail.com
+
+
+    else if (e.button == "down")
+        Vibe.vibrate('short');
+    else if (e.button == "up") {
+        Vibe.vibrate('double');
+        Accel.off('data');
+    }
+
