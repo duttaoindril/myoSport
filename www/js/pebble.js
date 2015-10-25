@@ -1,6 +1,7 @@
 var UI = require('ui');
 var Vibe = require('ui/vibe');
 var Accel = require('ui/accel');
+
 Accel.init();
 Accel.config({
     "rate": 10,
@@ -8,32 +9,75 @@ Accel.config({
     "subscribe": true
 });
 
-// Create a Card with title and subtitle
-var card = new UI.Card({
+var home = new UI.Card({
     title:'Learn Motion',
-    subtitle:'Connected!',
+    subtitle:'Up: Record\nSelect: Info\nDown: Analyze',
     fullscreen: true,
-    scrollable: true
+    icon: 'images/logo.png'
 });
 
-// Display the Card
-card.show();
-card.icon('images/logo.png');
-
-card.on('click', function(e) {
-    // Send a long vibration to the user wrist
-    if(e.button == "select")
-        Vibe.vibrate('long');
-    else if (e.button == "down")
-        Vibe.vibrate('short');
-    else if (e.button == "up") {
+home.on('click', 'up', function(e) {
+    var recording = false;
+    var card = new UI.Card();
+    card.title('Recording: No');
+    card.body("Press to record");
+    card.show();
+    card.on('click', function(e) {
         Vibe.vibrate('double');
-        Accel.off('data');
-    }
-    card.subtitle('Button ' + e.button + ' pressed.');
+        if(!recording) {
+            recording = true;
+            card.title('Recording: Yes');
+            Accel.on('data', function(e) {
+                var accel = e.accel;
+                card.body("Accelx: " + accel.x + "\nAccely: " + accel.y + "\nAccelz: " + (accel.z+1000) + "\nvibing: " + accel.vibe + "\ntime: " + accel.time);
+            });
+        } else {
+            recording = false;
+            card.title('Recording: No');
+            Accel.off("data");
+            card.body("Press to record");
+        }
+    });
 });
 
-Accel.on('data', function(e) {
-    var accel = e.accel;
-    card.subtitle("Accelx: " + accel.x + "\nAccely: " + accel.y + "\nAccelz: " + accel.z + "\n");
+home.on('click', 'select', function(e) {
+    var card = new UI.Card();
+    card.title('Learn Motion');
+    card.subtitle("Logged in as: duttaoindril");
+    card.icon('images/logo.png');
+    card.show();
+    card.on('click', function(e) {
+        Vibe.vibrate('double');
+    });
 });
+
+home.on('click', 'down', function(e) {
+    var comparing = false;
+    var card = new UI.Card();
+    var dtw = [0, 0, 0];
+    card.title('Analyzing: No');
+    card.body("Press to compare");
+    card.show();
+    card.on('click', function(e) {
+        Vibe.vibrate('double');
+        if(!comparing) {
+            comparing = true;
+            card.title('Analyzing: Yes');
+            Accel.on('data', function(e) {
+                var accel = e.accel;
+                card.body("dtwx: "+dtw[0]+"\ndtwy: "+dtw[1]+"\ndtwz: "+dtw[2]+"\nAccelx: " + accel.x + "\nAccely: " + accel.y + "\nAccelz: " + (accel.z+1000));
+            });
+        } else {
+            comparing = false;
+            card.title('Analyzing: No');
+            Accel.off("data");
+            card.body("Press to compare");
+        }
+    });
+});
+
+home.on("click", function(e) {
+   Vibe.vibrate('short');
+});
+
+home.show();
